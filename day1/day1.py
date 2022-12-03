@@ -1,6 +1,3 @@
-# Need minimum 50 stars by december 25th
-# 
-
 # Task 1
 def find_max_calories(filename):
     maxCalories = 0
