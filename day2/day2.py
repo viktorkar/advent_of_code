@@ -43,7 +43,7 @@ def calc_round_score(opponents_move, my_move):
         elif my_move == SCISSOR:    # Scissor -> Loss
             total_score += LOSE_P
 
-    elif opponents_move == PAPER :  
+    elif opponents_move == PAPER:  
         if my_move == PAPER:        # Paper -> Draw
             total_score += DRAW_P
         elif my_move == ROCK:       # Rock -> Loss
