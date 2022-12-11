@@ -28,7 +28,7 @@ def setup(input):
     print("\nActions:\n", actions)
 
     return starting_items, operations, tests, actions
-    
+
 ###############################################################################################
 def get_worry_level(item, operation, value):
     value = int(value) if value != "old" else item
@@ -45,7 +45,7 @@ def solve_task1():
     input = read_input("input.txt")
     items, operations, tests, actions = setup(input)
 
-    n_rounds = 10000
+    n_rounds = 20
     n_monkeys = len(items)
     n_inspections = [0] * n_monkeys
 
