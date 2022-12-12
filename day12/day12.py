@@ -70,7 +70,6 @@ def find_shortest_path(graph, start_id, end_id):
     visited_mountains.add(start_id)
     queue.append((start_id, [start_id])) # (Node, [Path])
 
-    
     while len(queue) > 0:
         (node, path) = queue.pop(0)
         height, mountains = graph[node]

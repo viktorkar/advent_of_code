@@ -65,7 +65,6 @@ def solve_task1():
 
                 # Throw the item to another monkey
                 items[throw_to_monkey].append(worry_level)
-
                 n_inspections[monkey] += 1
     
     for monkey, inspections in enumerate(n_inspections):

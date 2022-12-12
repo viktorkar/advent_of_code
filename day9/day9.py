@@ -1,3 +1,9 @@
+LEFT = "L"
+RIGHT = "R"
+UP = "U"
+DOWN = "D"
+
+###############################################################################################
 def read_input(filename):
     with open(filename) as f:
         data = f.read().strip().split("\n")
@@ -5,11 +11,7 @@ def read_input(filename):
 
     return data
 
-LEFT = "L"
-RIGHT = "R"
-UP = "U"
-DOWN = "D"
-
+###############################################################################################
 def move_head(direction, pos):
     x,y = pos
     if direction == UP:
@@ -21,6 +23,7 @@ def move_head(direction, pos):
     elif direction == LEFT:
         return x-1, y
 
+###############################################################################################
 def move_tail(head_pos, tail_pos):
     xh, yh = head_pos
     xt, yt = tail_pos
@@ -42,6 +45,7 @@ def move_tail(head_pos, tail_pos):
 
     return xt, yt
 
+###############################################################################################
 def solve_task1():
     input = read_input("input.txt")
     visited_positions = set()
@@ -58,7 +62,8 @@ def solve_task1():
             visited_positions.add((xt, yt))
 
     print("Task1 Solution: Number of visited positions =", len(visited_positions))
-
+    
+###############################################################################################
 def solve_task2():
     input = read_input("input.txt")
     visited_positions = set()
