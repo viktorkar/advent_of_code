@@ -16,7 +16,7 @@ def get_input(filename, task):
 def solve(task):
     id_map, id_zero = get_input("input.txt", task)
     mixed = list(id_map.keys())
-    n = len(mixed) - 1
+    n = len(mixed) - 1 # -1 since one item will be in motion, think that the item is first 'deleted' from the list
     rounds = 1 if task == 1 else 10
 
     for _ in range(rounds):
