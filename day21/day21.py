@@ -44,6 +44,7 @@ def find_value():
     previous_guess = monkies_known["humn"]
     previous_error = abs(find_shout("root"))
     
+    # Initial guess
     current_guess = 0
     monkies_known["humn"] = current_guess
     current_error = abs(find_shout("root"))
