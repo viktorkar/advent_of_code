@@ -18,7 +18,6 @@ def wrap_around():
     row, col = current_pos
     if current_direction == 3: # UP -> Wrap to bottom
         column_tiles = extract_col(col)
-        print(column_tiles)
         row = len(column_tiles.rstrip()) - 1 # Remove trailing whitespaces and then get last index
     elif current_direction == 0: # RIGHT -> Wrap to left side
         row_tiles = world[row]

@@ -5,7 +5,13 @@ WEST = 3
 ELF = "#"
 EMPTY_SPACE = "."
 
-from pprint import pprint
+direction_order = [NORTH, SOUTH, WEST, EAST]
+direction_changes = {
+    NORTH: (-1, 0),  # UP
+    EAST: (0, 1),  # RIGHT
+    SOUTH: (1, 0),  # DOWN
+    WEST: (0, -1),  # LEFT
+}
 
 
 def read_input(filename) -> tuple[list[str], set]:
@@ -19,27 +25,10 @@ def read_input(filename) -> tuple[list[str], set]:
                 if ch == ELF:
                     elf_positions.add((row, col))
 
-        return grid, elf_positions
+        return elf_positions
 
 
-def get_direction(current_pos, new_pos):
-    current_row, current_col = current_pos
-    new_row, new_col = new_pos
-
-    # Determine the direction of movement
-    if new_row < current_row:
-        return NORTH
-    elif new_row > current_row:
-        return SOUTH
-    elif new_col < current_col:
-        return WEST
-    elif new_col > current_col:
-        return EAST
-    else:
-        return None  # If the positions are the same, no direction
-
-
-def get_proposed_move(round, current_pos, grid) -> tuple[int, int]:
+def get_proposed_move(round, current_pos, elf_positions) -> tuple[int, int]:
     n_directions = len(direction_order)
 
     for i in range(n_directions):
@@ -49,88 +38,57 @@ def get_proposed_move(round, current_pos, grid) -> tuple[int, int]:
         new_pos = current_pos[0] + row_change, current_pos[1] + col_change
 
         # Return the proposed move if it is possible to move there
-        if is_valid_move(new_pos, direction, grid):
+        if not is_blocked(new_pos, direction, elf_positions):
             return new_pos
 
     return None
 
 
-def extract_col(col, row_start, row_end, grid) -> str:
-    column_tiles = ""
-    for row in range(row_start, row_end + 1):
-        column_tiles += grid[row][col]
-    return column_tiles
+def stay(current_pos, elf_positions) -> bool:
+    # Loop through the directions and check if we could move in all directions
+    for direction in direction_order:
+        row_change, col_change = direction_changes[direction]
+        new_pos = current_pos[0] + row_change, current_pos[1] + col_change
+
+        if is_blocked(new_pos, direction, elf_positions):
+            return False
+
+    return True
 
 
-def is_valid_move(new_pos, direction, grid) -> bool:
+def is_blocked(new_pos, direction, elf_positions) -> bool:
     row, col = new_pos
-    max_row, max_col = len(grid) - 1, len(grid[0]) - 1
-
-    # First check if new pos inside grid
-    if row <= 0 or row > max_row or col <= 0 or col > max_col:
-        return False
 
     # Check that we are not blocked by any elfs in that direction
     if direction == NORTH or direction == SOUTH:
-        col_min, col_max = max(col - 1, 0), min(col + 1, max_col)
-        return ELF not in grid[row][col_min : col_max + 1]
+        return True in [(row, x) in elf_positions for x in range(col - 1, col + 2)]
     else:
-        row_min, row_max = max(row - 1, 0), min(row + 1, max_row)
-        return ELF not in extract_col(col, row_min, row_max, grid)
+        return True in [(x, col) in elf_positions for x in range(row - 1, row + 2)]
 
 
-def move_elf(grid, current_pos, new_pos) -> list[str]:
-    row, col = current_pos
-    new_row, new_col = new_pos
-
-    # Remove the elf from the current pos and add it to the new pos
-    grid[row] = grid[row][:col] + EMPTY_SPACE + grid[row][col + 1 :]
-    grid[new_row] = grid[new_row][:new_col] + ELF + grid[new_row][new_col + 1 :]
-
-    # print("Old pos: {}, new pos: {}".format(current_pos, new_pos))
-
-    return grid
-
-
-def count_empty_tiles(grid, elf_positions) -> int:
+def count_empty_tiles(elf_positions) -> int:
     rows, cols = zip(*elf_positions)  # Separates rows and cols into two tuples
 
     min_row, max_row = min(rows), max(rows)
     min_col, max_col = min(cols), max(cols)
 
-    print("Minimum Row:", min_row)
-    print("Maximum Row:", max_row)
-    print("Minimum Column:", min_col)
-    print("Maximum Column:", max_col)
-
-    empty_tiles = 0
-
-    for row in range(min_row, max_row + 1):
-        for col in range(min_col, max_col + 1):
-            if grid[row][col] == EMPTY_SPACE:
-                empty_tiles += 1
+    empty_tiles = (max_row - min_row + 1) * (max_col - min_col + 1) - len(elf_positions)
 
     return empty_tiles
 
 
-max_rounds = 10
-direction_order = [NORTH, SOUTH, WEST, EAST]
-direction_changes = {
-    NORTH: (-1, 0),  # UP
-    EAST: (0, 1),  # RIGHT
-    SOUTH: (1, 0),  # DOWN
-    WEST: (0, -1),  # LEFT
-}
+def main(input_file, task2=False):
+    elf_positions = read_input(input_file)
+    n_rounds = 5000 if task2 else 10
 
-
-def solve_task1():
-    grid, elf_positions = read_input("test.txt")
-
-    for round in range(max_rounds):
+    for round in range(n_rounds):
         proposed_moves = {}
 
         for pos in elf_positions:
-            new_pos = get_proposed_move(round, pos, grid)
+            if stay(pos, elf_positions):
+                continue
+
+            new_pos = get_proposed_move(round, pos, elf_positions)
 
             # If no possible moves found, continue to next elf
             if new_pos is None:
@@ -139,22 +97,31 @@ def solve_task1():
             if new_pos not in proposed_moves:
                 proposed_moves[new_pos] = [pos]
             else:
-                proposed_moves[new_pos] += pos
+                proposed_moves[new_pos].append(pos)
 
         # Loop through all the proposed moves and perform the moves that only one elf proposed
+        no_elves_moved = True
         for new_pos, current_pos in proposed_moves.items():
             if len(current_pos) > 1:
                 continue
 
-            grid = move_elf(grid, current_pos[0], new_pos)
             elf_positions.remove(current_pos[0])
             elf_positions.add(new_pos)
+            no_elves_moved = False
 
-        print("\nROUND {}".format(round))
-        pprint(grid)
+        if task2 and no_elves_moved:
+            return round + 1
 
-    empty_tiles = count_empty_tiles(grid, elf_positions)
-    print("Answer: {}".format(empty_tiles))
+    if task2:
+        print("Error: The round where no elves moves was not found, increase maximum number of rounds.")
+        return None
+    else:
+        return count_empty_tiles(elf_positions)
 
 
-solve_task1()
+if __name__ == "__main__":
+    assert main("test.txt") == 110
+    assert main("test.txt", True) == 20
+
+    print("Answer Task 1: {}".format(main("input.txt")))
+    print("Answer Task 2: {}".format(main("input.txt", True)))
