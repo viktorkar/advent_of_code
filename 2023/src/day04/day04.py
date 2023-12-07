@@ -16,6 +16,7 @@ def timer_func(func):
     return wrap_func
 
 
+@timer_func
 def solve():
     with open("input.txt") as f:
         total_score = 0
@@ -23,9 +24,7 @@ def solve():
         for line in f.read().splitlines():
             winning_numbers, my_numbers = line.split("|")
 
-            winning_numbers = set(
-                int(num) for num in re.findall(r"\b\d+\b", winning_numbers.split(":", 1)[1])
-            )
+            winning_numbers = set(int(num) for num in re.findall(r"\b\d+\b", winning_numbers.split(":", 1)[1]))
             my_numbers = set(int(num) for num in re.findall(r"\b\d+\b", my_numbers))
 
             matching_numbers = len(winning_numbers.intersection(my_numbers))
@@ -33,17 +32,12 @@ def solve():
             total_score += score
             wins.append(matching_numbers)
 
-            print(matching_numbers)
-            print(score)
-
     card_value = {}
     for card_id, won_cards in reversed(list(enumerate(wins))):
         card_value[card_id] = 1
 
-        for id in range(card_id+1, card_id+won_cards+1):
+        for id in range(card_id + 1, card_id + won_cards + 1):
             card_value[card_id] += card_value[id]
-
-        print("Card " + str(card_id) + ": " + str(card_value[card_id]) + ", Wins: " + str(won_cards))
 
     return total_score, sum(card_value.values())
 
