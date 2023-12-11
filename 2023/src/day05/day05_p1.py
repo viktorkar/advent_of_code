@@ -1,3 +1,5 @@
+from time import time
+
 SEEDS = "seeds"
 SEED_TO_SOIL = "seed_to_soil"
 SOIL_TO_FERTILIZER = "soil_to_fertilizer"
@@ -17,6 +19,19 @@ ALMANAC_KEYS = {
     6: TEMPERATURE_TO_HUMIDITY,
     7: HUMIDITY_TO_LOCATION,
 }
+
+
+def timer_func(func):
+    # This function shows the execution time of
+    # the function object passed
+    def wrap_func(*args, **kwargs):
+        t1 = time()
+        result = func(*args, **kwargs)
+        t2 = time()
+        print(f"Function {func.__name__!r} executed in {(t2 - t1):.4f}s")
+        return result
+
+    return wrap_func
 
 
 def get_data():
@@ -48,16 +63,16 @@ def convert(value, mapping):
     return value
 
 
-def solve(part2=False):
+@timer_func
+def solve():
     almanac = get_data()
     locations = []
-    
+
     seeds = almanac[SEEDS]
 
     for seed in seeds:
         for key_id in range(1, len(ALMANAC_KEYS)):
             seed = convert(seed, almanac[ALMANAC_KEYS[key_id]])
-            print(seed)
 
         locations.append(seed)
 
@@ -66,4 +81,3 @@ def solve(part2=False):
 
 if __name__ == "__main__":
     print("Answer Task 1: {}".format(solve()))
-    print("Answer Task 2: {}".format(solve(part2=True)))
