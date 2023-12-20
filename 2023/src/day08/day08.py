@@ -35,7 +35,7 @@ def find_number_of_steps(start_node, instructions, mappings, part2=False):
     instruction_id = 0
     result = 0
 
-    while (current_value != "ZZZ" and not part2) or (part2 and not current_value.endswith("Z")):
+    while (not part2 and current_value != "ZZZ") or (part2 and not current_value.endswith("Z")):
         instuction = 0 if instructions[instruction_id] == "L" else 1
         current_value = mappings[current_value][instuction]
 
