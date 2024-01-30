@@ -1,3 +1,5 @@
+from time import time
+
 NORTH = 0
 SOUTH = 1
 EAST = 2
@@ -12,6 +14,19 @@ direction_changes = {
     SOUTH: (1, 0),  # DOWN
     WEST: (0, -1),  # LEFT
 }
+
+
+def timer_func(func):
+    # This function shows the execution time of
+    # the function object passed
+    def wrap_func(*args, **kwargs):
+        t1 = time()
+        result = func(*args, **kwargs)
+        t2 = time()
+        print(f"Function {func.__name__!r} executed in {(t2 - t1):.4f}s")
+        return result
+
+    return wrap_func
 
 
 def read_input(filename) -> tuple[list[str], set]:
@@ -44,13 +59,21 @@ def get_proposed_move(round, current_pos, elf_positions) -> tuple[int, int]:
     return None
 
 
-def stay(current_pos, elf_positions) -> bool:
-    # Loop through the directions and check if we could move in all directions
-    for direction in direction_order:
-        row_change, col_change = direction_changes[direction]
-        new_pos = current_pos[0] + row_change, current_pos[1] + col_change
+def get_surrounding_points(pos):
+    row, col = pos
+    neighbors = []
 
-        if is_blocked(new_pos, direction, elf_positions):
+    # Define the relative offsets for the surrounding points
+    offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    neighbors = [(row + offset_row, col + offset_col) for offset_row, offset_col in offsets]
+
+    return neighbors
+
+
+def stay(current_pos, elf_positions) -> bool:
+    for point in get_surrounding_points(current_pos):
+        if point in elf_positions:
             return False
 
     return True
@@ -59,11 +82,17 @@ def stay(current_pos, elf_positions) -> bool:
 def is_blocked(new_pos, direction, elf_positions) -> bool:
     row, col = new_pos
 
-    # Check that we are not blocked by any elfs in that direction
+    # Check that we are not blocked by any elves in that direction
     if direction == NORTH or direction == SOUTH:
-        return True in [(row, x) in elf_positions for x in range(col - 1, col + 2)]
+        for x in range(col - 1, col + 2):
+            if (row, x) in elf_positions:
+                return True
+        return False
     else:
-        return True in [(x, col) in elf_positions for x in range(row - 1, row + 2)]
+        for x in range(row - 1, row + 2):
+            if (x, col) in elf_positions:
+                return True
+        return False
 
 
 def count_empty_tiles(elf_positions) -> int:
@@ -77,6 +106,7 @@ def count_empty_tiles(elf_positions) -> int:
     return empty_tiles
 
 
+@timer_func
 def main(input_file, task2=False):
     elf_positions = read_input(input_file)
     n_rounds = 5000 if task2 else 10
@@ -113,7 +143,9 @@ def main(input_file, task2=False):
             return round + 1
 
     if task2:
-        print("Error: The round where no elves moves was not found, increase maximum number of rounds.")
+        print(
+            "Error: The round where no elves moves was not found, increase maximum number of rounds."
+        )
         return None
     else:
         return count_empty_tiles(elf_positions)
