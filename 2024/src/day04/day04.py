@@ -13,32 +13,32 @@ def get_data(filename):
         return data
 
 
-def is_horizontal_xmas_forward(data, row, col, width, height):
+def is_horizontal_xmas_forward(data, row, col, width):
     if col + 4 > width:
         return False
     
     return ''.join(data[row][col : col + 4]) == WORD_TO_FIND
 
-def is_horizontal_xmas_back(data, row, col, width, height):
+def is_horizontal_xmas_back(data, row, col):
     if col < 3:
         return False
 
     return ''.join(data[row][col - 3 : col + 1]) == WORD_TO_FIND_REVERSED
 
-def is_vertical_xmas_up(data, row, col, width, height):
+def is_vertical_xmas_up(data, row, col):
     if row < 3:
         return False
 
     return "".join(data[r][col] for r in range(row - 3, row+1)) == WORD_TO_FIND_REVERSED
 
-def is_vertical_xmas_down(data, row, col, width, height):
+def is_vertical_xmas_down(data, row, col, height):
     if row + 4 > height:
         return False
 
     return "".join(data[r][col] for r in range(row, row + 4)) == WORD_TO_FIND
 
 
-def is_diagonal_xmas_sw(data, row, col, width, height):
+def is_diagonal_xmas_sw(data, row, col, height):
     if col < 3 or row + 4 > height:
         return False
 
@@ -46,7 +46,7 @@ def is_diagonal_xmas_sw(data, row, col, width, height):
     return diagonal_word == WORD_TO_FIND
 
 
-def is_diagonal_xmas_nw(data, row, col, width, height):
+def is_diagonal_xmas_nw(data, row, col):
     if col < 3 or row < 3:
         return False
 
@@ -79,17 +79,17 @@ def solve_p1():
         for col in range(width):
             current_char = data[row][col]
             if current_char == WORD_TO_FIND[0]:
-                if is_horizontal_xmas_forward(data, row, col, width, height):
+                if is_horizontal_xmas_forward(data, row, col, width):
                     result += 1
-                if is_horizontal_xmas_back(data, row, col, width, height):
+                if is_horizontal_xmas_back(data, row, col):
                     result += 1
-                if is_vertical_xmas_up(data, row, col, width, height):
+                if is_vertical_xmas_up(data, row, col):
                     result += 1
-                if is_vertical_xmas_down(data, row, col, width, height):
+                if is_vertical_xmas_down(data, row, col, height):
                     result += 1
-                if is_diagonal_xmas_sw(data, row, col, width, height):
+                if is_diagonal_xmas_sw(data, row, col, height):
                     result += 1
-                if is_diagonal_xmas_nw(data, row, col, width, height):
+                if is_diagonal_xmas_nw(data, row, col):
                     result += 1
                 if is_diagonal_xmas_se(data, row, col, width, height):
                     result += 1
