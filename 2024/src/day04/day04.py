@@ -62,7 +62,7 @@ def is_diagonal_xmas_se(data, row, col, width, height):
     return diagonal_word == WORD_TO_FIND
 
 
-def is_diagonal_xmas_ne(data, row, col, width, height):
+def is_diagonal_xmas_ne(data, row, col, width):
     if col + 4 > width or row < 3:
         return False
 
@@ -93,7 +93,7 @@ def solve_p1():
                     result += 1
                 if is_diagonal_xmas_se(data, row, col, width, height):
                     result += 1
-                if is_diagonal_xmas_ne(data, row, col, width, height):
+                if is_diagonal_xmas_ne(data, row, col, width):
                     result += 1
 
     return result
