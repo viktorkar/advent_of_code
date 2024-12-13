@@ -11,9 +11,8 @@ def get_data(filename):
         ]
 
 def can_be_calibrated(target, numbers, operators=(operator.add, operator.mul)):
-    """Can the tuple of numbers be calibrated as a correct equation using '+' and '*' ?"""
     first, *rest = numbers
-    results = {first} # A set of all possible results of the partial computation
+    results = {first}
     for y in rest:
         results = {op(x, y) for x in results if x <= target for op in operators}
     return target in results
