@@ -7,7 +7,6 @@ class Direction(IntEnum):
     SOUTH = 2
     WEST = 3
 
-
 OBSTACLE, EMPTY_SPACE = "#", "."
 POSITIONS = {
     "^": Direction.NORTH, 
@@ -21,7 +20,6 @@ MOVE = {
     Direction.SOUTH: (1, 0),
     Direction.WEST: (0, -1),
 }
-
 
 def read_data(filename):
     with open(filename, "r") as f:
@@ -65,35 +63,34 @@ def solve_p1():
 
     return len(visited)
 
-
 def solve_p2():
     obstacles, guard_start_pos, max_row, max_col = read_data("input.txt")
-    visited_orig = set()
+    guard_path = set()
+    visited_positions = set()
     added_obstacles = set()
+
+    # Simulate guard's original path
     guard_pos = guard_start_pos
-
     while is_inside_grid(guard_pos, max_row, max_col):
+        guard_path.add(guard_pos[0])
         guard_pos = move(guard_pos, obstacles)
-        visited_orig.add(guard_pos[0])
 
-    for pos in visited_orig:
+    # Test placing obstacles
+    for pos in guard_path:
+        if pos == guard_start_pos[0]:  # Cannot place on starting position
+            continue
+
+        # Simulate with new obstacle
+        new_obstacles = obstacles.union({pos})
         guard_pos = guard_start_pos
-        new_obstacles = obstacles.union(pos)
-        visited = set([guard_pos])
+        visited_positions.clear()
 
-        while True:
-            guard_pos = move(guard_pos, new_obstacles)
-
-            if not is_inside_grid(guard_pos, max_row, max_col):
-                break
-
-            if guard_pos in visited:
+        while is_inside_grid(guard_pos, max_row, max_col):
+            if guard_pos in visited_positions:  # Loop detected
                 added_obstacles.add(pos)
                 break
-            
-            visited.add(guard_pos)
-            print(visited)
-            return
+            visited_positions.add(guard_pos)
+            guard_pos = move(guard_pos, new_obstacles)
 
     return len(added_obstacles)
 
