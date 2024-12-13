@@ -1,9 +1,6 @@
 from time import time
 
-
 def timer_func(func):
-    # This function shows the execution time of
-    # the function object passed
     def wrap_func(*args, **kwargs):
         t1 = time()
         result = func(*args, **kwargs)
@@ -12,7 +9,6 @@ def timer_func(func):
         return result
 
     return wrap_func
-
 
 def get_data(filename):
     col_1, col_2 = [], []
