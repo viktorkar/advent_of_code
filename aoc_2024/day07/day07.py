@@ -1,5 +1,3 @@
-
-
 import operator
 
 
@@ -20,25 +18,14 @@ def can_be_calibrated(target, numbers, operators=(operator.add, operator.mul)):
     
 def solve_p1():
     data = get_data('input.txt')
-    result = 0
+    return sum([target for target, numbers in data if can_be_calibrated(target, numbers)])
 
-    for target, numbers in data:
-        if can_be_calibrated(target, numbers):
-            result += target
-    
-    return result
 
 def solve_p2():
     data = get_data('input.txt')
-    result = 0
     operators3 = (operator.add, operator.mul, lambda x, y: int(str(x) + str(y)))
 
-    for target, numbers in data:
-
-        if can_be_calibrated(target, numbers, operators3):
-            result += target
-    
-    return result
+    return sum([target for target, numbers in data if can_be_calibrated(target, numbers, operators3)])
 
 
 
